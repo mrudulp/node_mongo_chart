@@ -2,8 +2,8 @@ version: "2"
 services:
     web:
         build: .
-        # volumes: # Use this to mount app from local disk
-        #     - ./:/app
+        volumes: # Use this to mount app from local disk
+            - ./:/usr/src/app
         ports:
             - "8080:8080"
         links:
