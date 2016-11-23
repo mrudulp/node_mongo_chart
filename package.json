@@ -13,5 +13,13 @@
     "express": "^4.14.0",
     "mongoose": "^4.6.8",
     "nodemon": "^1.11.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrudulp/node_mongo_chart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mrudulp/node_mongo_chart/issues"
+  },
+  "homepage": "https://github.com/mrudulp/node_mongo_chart#readme"
 }
