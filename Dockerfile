@@ -1,8 +1,15 @@
 FROM node:argon
-RUN mkdir /app
-WORKDIR /app
-COPY package.json /app
+
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# Install app dependencies
+COPY package.json /usr/src/app/
 RUN npm install
-COPY . /app
-EXPOSE 3000
-CMD ["npm", "start"]
+
+# Bundle app source
+COPY . /usr/src/app
+
+EXPOSE 8080
+CMD [ "npm", "start" ]

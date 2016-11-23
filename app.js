@@ -1,12 +1,18 @@
-var express = require('express');
-var app = express();
+'use strict';
+
+const express = require('express');
 var mongoose = require('mongoose');
 //DB setup
 mongoose.connect("mongodb://mongo:27017");
 
-app.get('/', function(req, res){
-  res.send("Hello World");
+// Constants
+const PORT = 8080;
+
+// App
+const app = express();
+app.get('/', function (req, res) {
+  res.send('Hello world\n');
 });
-app.listen(3000, function(){
-  console.log('Example app listening on port 3000!');
-});
+
+app.listen(PORT);
+console.log('Running on http://localhost:' + PORT);

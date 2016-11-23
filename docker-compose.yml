@@ -2,10 +2,10 @@ version: "2"
 services:
     web:
         build: .
-        volumes:
-            - ./:/app
+        # volumes: # Use this to mount app from local disk
+        #     - ./:/app
         ports:
-            - "3000:3000"
+            - "8080:8080"
         links:
             - mongo
     mongo:
