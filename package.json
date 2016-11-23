@@ -10,7 +10,9 @@
   "author": "Mrudul P.",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^2.4.0",
     "express": "^4.14.0",
+    "mongodb": "^2.2.11",
     "mongoose": "^4.6.8",
     "nodemon": "^1.11.0"
   },
