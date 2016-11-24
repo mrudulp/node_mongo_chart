@@ -16,15 +16,19 @@ const PORT = 8080;
 
 // App
 const app = express();
+
+// //Defining middleware to serve static files
+app.use('/public', express.static('public'));
+app.use('/server', express.static('server'));
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
 
 app.get("/perfs", function(req, res){
 //    res.sendFile(path.join(__dirname+'/index.html'));
-//  getData(res);
-    
+  getData(res);  
 });
+
 
 function getData(res){
   res.send(chart.createAllGraphs());
