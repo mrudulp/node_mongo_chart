@@ -2,32 +2,13 @@
 
 // Import Jsons to MongoDB
 // mongoimport -d perfSample -c perfR --type json --file sample.json --jsonArray
-const express = require('express');
-const chart = require('charts');
-// var mongoose = require('mongoose');
-// //DB setup
-// mongoose.connect("mongodb://localhost/perfSample:27017");
-// var db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//   // we're connected!
-//   console.log("Connected to Mongodb");
-
-//   var perfSchema = mongoose.Schema({
-//     filename: String
-//     secs: Number
-//     platform: String
-//     version: String
-//   })
-
-//   var Perf = mongoose.model('Perform',perfSchema);
-//   Perf.find(function (err, performs) {
-//     if (err) return console.error(err);
-//     console.log(performs);
-//   })
-// });
 //MongoDB connection URL - mongodb://host:port/dbName
 // Why mongo --https://docs.docker.com/compose/networking/ (Section for db)
+
+const express = require('express');
+const chart = require('./server/js/chartBackend.js');
+var path    = require("path");
+var $ = require('jquery');
 
 
 // Constants
@@ -36,16 +17,33 @@ const PORT = 8080;
 // App
 const app = express();
 app.get('/', function (req, res) {
-  res.send('Hello world\n');
+  res.sendFile(path.join(__dirname+'/index.html'));
 });
+
 app.get("/perfs", function(req, res){
-  getData(res);
-  chart.createAllGraphs();//Check
+//    res.sendFile(path.join(__dirname+'/index.html'));
+//  getData(res);
+    
 });
 
-function getData(){
-     //To call charts.js here
-    }
+function getData(res){
+  res.send(chart.createAllGraphs());
+ }
 
-app.listen(PORT);
-console.log('Running on http://localhost:' + PORT);
+// //NPM Module to integrate Handlerbars UI template engine with Express
+// var exphbs  = require('express-handlebars');
+
+// //Declaring Express to use Handlerbars template engine with main.handlebars as
+// //the default layout
+// app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+// app.set('view engine', 'handlebars');
+
+// //Defining middleware to serve static files
+// app.use('/public', express.static('public'));
+// app.get("/", function(req, res){
+//   res.render("chart");
+// });
+
+app.listen(PORT, function(){
+  console.log('Running on http://localhost:' + PORT);
+});
