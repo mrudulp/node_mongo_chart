@@ -1,61 +1,55 @@
-
 var createAllGraphs = function(){
-            var bgColorArray = [
+                var platformDataSets = createPlatformDataSets();
+
+            //Closure functions
+// var createPlatformDataSets = 
+            function createPlatformDataSets(){
+                var bgColorArray = [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
                             'rgba(255, 206, 86, 0.2)',
                             'rgba(75, 192, 192, 0.2)'
                             ];
 
-            var borderColorArray = [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)'
-                    ];
-            //Retrive Data from Db
-            // Get Platforms
-            var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
-            for (p=0; p < platforms.length; p++){
-                var options = createOptions(platforms[p]);
-                //Get FileNames
-                var labels = ["fdng_dng.json", "fdpx_dpx.json", "fexr_exr.json", "fmp4_mp4.json"];// (select disctinct(filename) from cpu where platform = plat)[f1,f2,f3]
-                //Get Versions
-                var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
-                var dataSets = [];
-                for ( v=0; v < versions.length; v++){
-                        // versions
-                        //data = [secs1, secs2,...]
-                        var borderWidth = 1;
-                        var type = 'bar';
-                        var data = [52.4060092977, 90.0854057722, 196.576968515, 77.6216726434]; //(select secs from cpu where version = version and platform = plat)
-                        
-                        var bgColorSet = [];
-                        for (i=0; i < data.length; i++)
-                            bgColorSet.push(bgColorArray[v]);
+                var borderColorArray = [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                        ];
+                //Retrive Data from Db
+                // Get Platforms
+                var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
+                var platformDataSets = []
+                for (p=0; p < platforms.length; p++){
+                    var options = createOptions(platforms[p]);
+                    //Get FileNames
+                    var labels = ["fdng_dng.json", "fdpx_dpx.json", "fexr_exr.json", "fmp4_mp4.json"];// (select disctinct(filename) from cpu where platform = plat)[f1,f2,f3]
+                    //Get Versions
+                    var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
+                    var dataSets = [];
+                    for ( v=0; v < versions.length; v++){
+                            // versions
+                            //data = [secs1, secs2,...]
+                            var borderWidth = 1;
+                            var type = 'bar';
+                            var data = [52.4060092977, 90.0854057722, 196.576968515, 77.6216726434]; //(select secs from cpu where version = version and platform = plat)
+                            
+                            var bgColorSet = [];
+                            for (i=0; i < data.length; i++)
+                                bgColorSet.push(bgColorArray[v]);
 
-                        var borderColorSet = [];
-                        for (i=0; i < data.length; i++)
-                            borderColorSet.push(borderColorArray[v]);
+                            var borderColorSet = [];
+                            for (i=0; i < data.length; i++)
+                                borderColorSet.push(borderColorArray[v]);
 
-                        var dataset = createDataSet(versions[v], type, data, bgColorSet, borderColorSet, borderWidth );
-                        dataSets.push(dataset);
-                    }
-                createGraph(platforms[p], labels, options, dataSets);
-            }
-
-            //Closure functions
-            function createGraph(id, aLabels, aOptions, aDataSets){
-                var ctx = document.getElementById(id);
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: aLabels,
-                        datasets: aDataSets
-                    },
-                    options: aOptions
-                    });
-                return myChart;
+                            var dataset = createDataSet(versions[v], type, data, bgColorSet, borderColorSet, borderWidth );
+                            dataSets.push(dataset);
+                        }
+                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":p}
+                    platformDataSets.push(platformData)
+                }
+            return platformDataSets
             }
 
             function createOptions(chartTitle){
@@ -95,7 +89,7 @@ var createAllGraphs = function(){
                 return data
             }
             
-            function retriveFromDb(query, dbname="perfDb2"){
+            function retriveFromDb(query, dbname){
                 var dbHost = "mongodb://mongo:27017/perfSample";
                 var mongodb = require('mongodb')
                 var dbObject;
@@ -149,6 +143,10 @@ var createAllGraphs = function(){
                     };
                 });
             }
+            return platformDataSets;
         }
     
-    var module.exports = createAllGraphs;
+    //Check Difference between two
+    // module.exports = createAllGraphs; 
+    exports.createAllGraphs = createAllGraphs;
+    //exports.createPlatformDataSets = createPlatformDataSets;
