@@ -46,7 +46,7 @@ var createAllGraphs = function(){
                             var dataset = createDataSet(versions[v], type, data, bgColorSet, borderColorSet, borderWidth );
                             dataSets.push(dataset);
                         }
-                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":p}
+                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platforms[p]}
                     platformDataSets.push(platformData)
                 }
             return platformDataSets
