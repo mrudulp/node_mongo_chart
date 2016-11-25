@@ -8,7 +8,7 @@ $(function(){
                 console.log(platformDataSets)
 
                 for (p=0; p < platformDataSets.length; p++){
-                    createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].dataSets);
+                    createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets);
                 }
         }
     });
