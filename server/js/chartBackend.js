@@ -1,9 +1,184 @@
-var createAllGraphs = function(){
-                var platformDataSets = createPlatformDataSets();
+var createAllGraphs = function(callback){
+
+            createPlatformDataSets(function(err, callbackObj){
+                if (err)  throw err
+                return callback(null,callbackObj)
+            });
 
             //Closure functions
 // var createPlatformDataSets = 
-            function createPlatformDataSets(){
+            function createPlatformDataSets(callback){
+                var dbHost = "mongodb://mongo:27017/perfSample";
+                var mongodb = require('mongodb')
+
+                var platformDataSets = []
+
+                //Retrive Data from Db
+                // Get Platforms
+                //var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
+                var platformq = "platform"
+                //get Instance of Mongoclient
+                var MongoClient = mongodb.MongoClient;
+
+                //Connecting to the Mongodb instance.
+                //Make sure your mongodb daemon mongod is running on port 27017 on localhost
+                MongoClient.connect(dbHost, function(err, db){
+                    if ( err ) throw err;
+                    //use the find() API and pass an empty query object to retrieve all records
+                    db.collection("perfR").distinct(platformq,function(err, platResultSet){
+                        if ( err ) throw err;
+                        var maxPlatCnt = platResultSet.length
+                        if (maxPlatCnt == 0){
+                            console.log("Bad PlatfQ Query")
+                            callback(true)
+                        }
+                        var platformProcessed = 0
+                        for (p=0; p < platResultSet.length; p++){
+                            (function(index){
+                                var platform = platResultSet[index]
+                                var options = createOptions(platform);
+                                //Get FileNames
+                                //var labels = ["fdng_dng.json", "fdpx_dpx.json", "fexr_exr.json", "fmp4_mp4.json"];// (select disctinct(filename) from cpu where platform = plat)[f1,f2,f3]
+                                // var labels = []
+                                //Get Versions
+                                //var versionq = "\"version\",{\"platform\":" + platform + "}"
+                                var versionq = {"platform": platform }
+                                console.log("Versionq::"+versionq+"::Stringify::"+JSON.stringify(versionq))
+                                // var dataSets = [];
+                                //var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
+                                db.collection("perfR").distinct("version",versionq,function(err, verResultSet){
+                                    if ( err ) throw err;
+                                    var maxVerCnt = verResultSet.length
+                                    if (maxVerCnt == 0){
+                                        db.close()
+                                        console.log("Bad Versionq Query")
+                                        callback(true)
+                                    }
+                                    
+                                    var versionDataProcessed = 0
+                                    var dataSets = [] // For All versions
+                                    for ( v=0; v < verResultSet.length; v++){
+                                            (function(idx){
+                                                // versions
+                                                var version = verResultSet[idx]; //Is this accessible??
+                                                //data = [secs1, secs2,...]
+                                                
+                                                //var data = [52.4060092977, 90.0854057722, 196.576968515, 77.6216726434]; //(select secs from cpu where version = version and platform = plat)
+                                                //var dataq = "{platform:\"" + platform + "\",version:\"" + version + "\"},{filename:1,secs:1,_id:0}"
+                                                var dataq = {platform:platform ,version:version}
+                                                var varsReq = {"filename":1,"secs":1,"_id":0}
+
+                                                db.collection("perfR").find(dataq,varsReq).toArray(function(err, dataResultSet){
+                                                    if ( err ) throw err;
+                                                    if (dataResultSet.length == 0){
+                                                        console.log("Bad dataq Query")
+                                                        callback(true)
+                                                    }
+                                                    // Per version Chart Settings
+                                                    var bgColorSet = []
+                                                    var borderColorSet = []
+                                                    var data = []
+                                                    var labels = []
+                                                    // var version = versions[v]; //Is this accessible??
+                                                    var borderWidth = 1;
+                                                    var type = 'bar';
+                                                    var bgColorArray = [
+                                                                'rgba(255, 99, 132, 0.2)',
+                                                                'rgba(54, 162, 235, 0.2)',
+                                                                'rgba(255, 206, 86, 0.2)',
+                                                                'rgba(75, 192, 192, 0.2)'
+                                                                ];
+
+                                                    var borderColorArray = [
+                                                                    'rgba(255, 99, 132, 1)',
+                                                                    'rgba(54, 162, 235, 1)',
+                                                                    'rgba(255, 206, 86, 1)',
+                                                                    'rgba(75, 192, 192, 1)'
+                                                            ];
+                                                    
+                                                    for (i=0; i < dataResultSet.length; i++)
+                                                        bgColorSet.push(bgColorArray[idx]);//Per plaform color == idx
+
+                                                    
+                                                    for (i=0; i < dataResultSet.length; i++)
+                                                        borderColorSet.push(borderColorArray[idx]);//Per plaform color == idx
+                                                    
+                                                    
+                                                    for (i=0; i < dataResultSet.length; i++)
+                                                        data.push(dataResultSet[i]["secs"])
+
+                                                    for (i=0; i < dataResultSet.length; i++)
+                                                        labels.push(dataResultSet[i]["filename"]) // Is this label accessible
+                                                    
+                                                    dataSets.push(createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth )); // Is Dataset accessible
+                                                    versionDataProcessed++
+                                                    
+                                                    if (maxVerCnt == versionDataProcessed){
+                                                        
+                                                        var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform}
+                                                        platformDataSets.push(platformData)
+                                                        platformProcessed++ // Processed one version, add platform count
+
+                                                        if (platformProcessed == maxPlatCnt){
+                                                            db.close()
+                                                            callback(null,platformDataSets)
+                                                        }
+                                                    }
+                                                });
+                                            })(v)
+                                            
+                                            // dataSets.push(callCreateDataSet(version));
+                                        }
+                                });
+                            })(p)
+                        } // for platforms
+                    }); // distinct for Platforms
+                }); // First Mongo call
+
+  //              retriveDistinctFromDb(platformq, callPlatformDataSets);
+            }
+
+            function callPlatformDataSets(resultSet){
+                var maxPlatCnt = resultSet.length
+                var platformProcessed = 0
+                for (p=0; p < resultSet.length; p++){
+                    var platform = resultSet[p]
+                    var options = createOptions(platform);
+                    //Get FileNames
+                    //var labels = ["fdng_dng.json", "fdpx_dpx.json", "fexr_exr.json", "fmp4_mp4.json"];// (select disctinct(filename) from cpu where platform = plat)[f1,f2,f3]
+                    var labels = []
+                    //Get Versions
+                    var versionq = "\"version\",{\"platform\":" + platform + "}"
+                    var dataSets = [];
+                    retriveDistinctFromDb(versionq, callVersionedPlatformDataSet)
+                    //var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
+                }
+            }
+
+            function callVersionedPlatformDataSet(resultSet){
+                var maxVerCnt = resultSet.length
+                var versionDataProcessed = 0 
+                for ( v=0; v < resultSet.length; v++){
+                        // versions
+                        var version = resultSet[v]; //Is this accessible??
+                        //data = [secs1, secs2,...]
+
+                        //var data = [52.4060092977, 90.0854057722, 196.576968515, 77.6216726434]; //(select secs from cpu where version = version and platform = plat)
+                        var dataq = "{\"platform\":\"" + platform + "\",\"version\":\"" + version + "\"},{\"filename\":1,\"secs\":1,\"_id\":0}"
+                        retriveFromDb(dataq, callCreateDataSet)
+                        
+                        // dataSets.push(callCreateDataSet(version));
+                    }
+                platformProcessed++
+                if (platformProcessed == maxPlatCnt){
+                    db.close()
+                    callback(null, platformDataSets)
+                }
+            }
+            function callCreateDataSet(resultSet){
+                // var version = versions[v]; //Is this accessible??
+                var borderWidth = 1;
+                var type = 'bar';
                 var bgColorArray = [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
@@ -17,40 +192,30 @@ var createAllGraphs = function(){
                                 'rgba(255, 206, 86, 1)',
                                 'rgba(75, 192, 192, 1)'
                         ];
-                //Retrive Data from Db
-                // Get Platforms
-                var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
-                var platformDataSets = []
-                for (p=0; p < platforms.length; p++){
-                    var options = createOptions(platforms[p]);
-                    //Get FileNames
-                    var labels = ["fdng_dng.json", "fdpx_dpx.json", "fexr_exr.json", "fmp4_mp4.json"];// (select disctinct(filename) from cpu where platform = plat)[f1,f2,f3]
-                    //Get Versions
-                    var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
-                    var dataSets = [];
-                    for ( v=0; v < versions.length; v++){
-                            // versions
-                            //data = [secs1, secs2,...]
-                            var borderWidth = 1;
-                            var type = 'bar';
-                            var data = [52.4060092977, 90.0854057722, 196.576968515, 77.6216726434]; //(select secs from cpu where version = version and platform = plat)
-                            
-                            var bgColorSet = [];
-                            for (i=0; i < data.length; i++)
-                                bgColorSet.push(bgColorArray[v]);
+                var bgColorSet = [];
+                for (i=0; i < resultSet.length; i++)
+                    bgColorSet.push(bgColorArray[v]);
 
-                            var borderColorSet = [];
-                            for (i=0; i < data.length; i++)
-                                borderColorSet.push(borderColorArray[v]);
+                var borderColorSet = [];
+                for (i=0; i < resultSet.length; i++)
+                    borderColorSet.push(borderColorArray[v]);
+                
+                var data = []
+                for (i=0; i < resultSet.length; i++)
+                    data.push(resultSet["filename"])
 
-                            var dataset = createDataSet(versions[v], type, data, bgColorSet, borderColorSet, borderWidth );
-                            dataSets.push(dataset);
-                        }
-                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platforms[p]}
+                for (i=0; i < resultSet.length; i++)
+                    labels.push(resultSet["secs"]) // Is this label accessible
+                
+                dataSets.push(createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth )); // Is Dataset accessible
+                versionDataProcessed++
+                if (maxVerCnt == versionDataProcessed){
+                    db.close()
+                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform}
                     platformDataSets.push(platformData)
                 }
-            return platformDataSets
             }
+
 
             function createOptions(chartTitle){
                 var options = {
@@ -89,10 +254,7 @@ var createAllGraphs = function(){
                 return data
             }
             
-            function retriveFromDb(query, dbname){
-                var dbHost = "mongodb://mongo:27017/perfSample";
-                var mongodb = require('mongodb')
-                var dbObject;
+            function retriveFromDb(query, callback){
 
                 //get Instance of Mongoclient
                 var MongoClient = mongodb.MongoClient;
@@ -101,49 +263,32 @@ var createAllGraphs = function(){
                 //Make sure your mongodb daemon mongod is running on port 27017 on localhost
                 MongoClient.connect(dbHost, function(err, db){
                     if ( err ) throw err;
-                    dbObject = db;
+                    //use the find() API and pass an empty query object to retrieve all records
+                    db.collection("perfR").find(query).toArray(function(err, docs){
+                        if ( err ) throw err;
+                        callback(docs)
+                    });
                 });
 
-            //use the find() API and pass an empty query object to retrieve all records
-                dbObject.collection("perfR").find({}).toArray(function(err, docs){
+            }
+
+           function retriveDistinctFromDb(query, callback){
+
+                //get Instance of Mongoclient
+                var MongoClient = mongodb.MongoClient;
+
+                //Connecting to the Mongodb instance.
+                //Make sure your mongodb daemon mongod is running on port 27017 on localhost
+                MongoClient.connect(dbHost, function(err, db){
                     if ( err ) throw err;
-                    var filenameArray = [];
-                    var timeTakenArray = [];
-                    var versionArray = [];
-                    var platformArray = [];
-                
-                    for ( index in docs){
-                    var doc = docs[index];
-                    //category array
-                    var month = doc['filename'];
-                    //series 1 values array
-                    var secs = doc['secs'];
-                    //series 2 values array
-                    var version = doc['version'];
-                    var platform = doc['platform']
-                    filenameArray.push({"label": filename});
-                    timeTakenArray.push({"value" : secs});
-                    versionArray.push({"value" : diesel});
-                    }
-                
-                    var dataset = [
-                    {
-                        "seriesname" : "Petrol Price",
-                        "data" : petrolPrices
-                    },
-                    {
-                        "seriesname" : "Diesel Price",
-                        "data": dieselPrices
-                    }
-                    ];
-                
-                    var response = {
-                    "dataset" : dataset,
-                    "categories" : monthArray
-                    };
+                    //use the find() API and pass an empty query object to retrieve all records
+                    db.collection("perfR").distinct(query,function(err, docs){
+                        if ( err ) throw err;
+                        callback(docs)
+                    });
                 });
             }
-            return platformDataSets;
+        //    return all_datasets;
         }
     
     //Check Difference between two

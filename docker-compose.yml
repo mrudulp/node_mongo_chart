@@ -6,6 +6,8 @@ services:
             - ./:/usr/src/app
         ports:
             - "8080:8080"
+            - "5858:5858"
+        entrypoint: node --debug=5858 app.js
         links:
             - mongo
     mongo:
