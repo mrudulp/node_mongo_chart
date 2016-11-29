@@ -1,10 +1,122 @@
 var createAllGraphs = function(callback){
 
-            createPlatformDataSets(function(err, callbackObj){
-                if (err)  throw err
-                return callback(null,callbackObj)
-            });
+            // createPlatformDataSets(function(err, callbackObj){
+            //     if (err)  throw err
+            //     return callback(null,callbackObj)
+            // });
 
+            asyncCreatePlatformDataSets()
+            
+            function asyncCreatePlatformDataSets() {
+    
+                var dbHost = "mongodb://mongo:27017/perfSample";
+                var mongodb = require('mongodb')
+
+                var platformDataSets = []
+
+                //Retrive Data from Db
+                // Get Platforms
+                //var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
+                var platformq = "platform"
+                //get Instance of Mongoclient
+                var MongoClient = mongodb.MongoClient;
+
+                //Connecting to the Mongodb instance.
+                //Make sure your mongodb daemon mongod is running on port 27017 on localhost
+                MongoClient.connect(dbHost).then(function(db){
+                    db.collection("perfR").distinct(platformq).then(function(platResultSet){
+                        var maxPlatCnt = platResultSet.length
+                            if (maxPlatCnt == 0){
+                                console.log("Bad PlatfQ Query")
+                                callback(true)
+                            }
+                            var platformProcessed = 0
+                            for (p=0; p < platResultSet.length; p++){
+                                (function(index){
+                                    var platform = platResultSet[index]
+                                    var options = createOptions(platform);
+                                    var versionq = {"platform": platform }
+                                    db.collection("perfR").distinct("version",versionq).then(function(verResultSet){
+                                            var maxVerCnt = verResultSet.length
+                                            if (maxVerCnt == 0){
+                                                db.close()
+                                                console.log("Bad Versionq Query")
+                                                callback(true)
+                                            }
+                                            var versionDataProcessed = 0
+                                            var dataSets = [] // For All versions
+                                            for ( v=0; v < verResultSet.length; v++){
+                                                (function(idx){
+                                                    var version = verResultSet[v]; //Is this accessible??
+                                                    var dataq = {platform:platform ,version:version}
+                                                    var varsReq = {filename:1,secs:1,_id:0}
+
+                                                    //db.collection("perfR").find(dataq,varsReq).toArray().then(function(docs){
+                                                    db.collection("perfR").find(dataq,varsReq).toArray().then(function(dataResultSet){
+                                                            if (dataResultSet.length == 0){
+                                                                console.log("Bad dataq Query")
+                                                                callback(true)
+                                                            }
+                                                            // Per version Chart Settings
+                                                            var bgColorSet = []
+                                                            var borderColorSet = []
+                                                            var data = []
+                                                            var labels = []
+                                                            // var version = versions[v]; //Is this accessible??
+                                                            var borderWidth = 1;
+                                                            var type = 'bar';
+                                                            var bgColorArray = [
+                                                                        'rgba(255, 99, 132, 0.2)',
+                                                                        'rgba(54, 162, 235, 0.2)',
+                                                                        'rgba(255, 206, 86, 0.2)',
+                                                                        'rgba(75, 192, 192, 0.2)'
+                                                                        ];
+
+                                                            var borderColorArray = [
+                                                                            'rgba(255, 99, 132, 1)',
+                                                                            'rgba(54, 162, 235, 1)',
+                                                                            'rgba(255, 206, 86, 1)',
+                                                                            'rgba(75, 192, 192, 1)'
+                                                                    ];
+                                                            
+                                                            for (i=0; i < dataResultSet.length; i++)
+                                                                bgColorSet.push(bgColorArray[idx]);//Per plaform color == idx
+
+                                                            
+                                                            for (i=0; i < dataResultSet.length; i++)
+                                                                borderColorSet.push(borderColorArray[idx]);//Per plaform color == idx
+                                                            
+                                                            
+                                                            for (i=0; i < dataResultSet.length; i++)
+                                                                data.push(dataResultSet[i]["secs"])
+
+                                                            for (i=0; i < dataResultSet.length; i++)
+                                                                labels.push(dataResultSet[i]["filename"]) // Is this label accessible
+                                                            
+                                                            dataSets.push(createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth )); // Is Dataset accessible
+                                                            versionDataProcessed++
+                                                            
+                                                            if (maxVerCnt == versionDataProcessed){
+                                                                
+                                                                var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform}
+                                                                platformDataSets.push(platformData)
+                                                                platformProcessed++ // Processed one version, add platform count
+
+                                                                if (platformProcessed == maxPlatCnt){
+                                                                    db.close()
+                                                                    callback(null,platformDataSets)
+                                                                }
+                                                            }
+                                                    }) //find dataq
+
+                                                })(v)
+                                            } // version loop
+                                    })// distinct version
+                                })(p)
+                            } // platform loop
+                    }) // distinct platform
+                }) // connect db
+            }
             //Closure functions
 // var createPlatformDataSets = 
             function createPlatformDataSets(callback){
