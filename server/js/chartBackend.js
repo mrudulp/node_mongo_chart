@@ -5,8 +5,80 @@ var createAllGraphs = function(callback){
             //     return callback(null,callbackObj)
             // });
 
-            asyncCreatePlatformDataSets()
-            
+            //asyncCreatePlatformDataSets()
+            asyncPromissedCreatePlatformDataSets()
+
+            function asyncPromissedCreatePlatformDataSets(){
+                var dbHost = "mongodb://mongo:27017/perfSample";
+                var mongodb = require('mongodb')
+
+                var platformDataSets = []
+
+                //Retrive Data from Db
+                // Get Platforms
+                //var platforms = ["win", "mac"];// (select disctinct(platform) from cpu)
+                var platformq = "platform"
+                //get Instance of Mongoclient
+                var MongoClient = mongodb.MongoClient;
+
+                //Connecting to the Mongodb instance.
+                //Make sure your mongodb daemon mongod is running on port 27017 on localhost
+                MongoClient.connect(dbHost).then(function(db){
+                    var collection = db.collection("perfR")
+                    collection.distinct(platformq).then(function(platResultSet){
+                        var platformDataSets = platResultSet.map(function(platform){
+                            console.log("Plat::"+platform)
+                            var options = createOptions(platform);
+                            var labels = []
+                            var versionq = {"platform": platform }
+                            collection.distinct("version",versionq)
+                                .then(function(verResultSet){
+                                    var platRes = verResultSet.map(function(version,vdx){
+                                            console.log("Version::"+version)
+                                            var dataq = {platform:platform ,version:version}
+                                            var varsReq = {filename:1,secs:1,_id:0}
+
+                                            //collection.find(dataq,varsReq).toArray().then(function(docs){
+                                            collection.find(dataq,varsReq).toArray()
+                                                .then(function(dataResultSet){
+                                                    var borderWidth = 1;
+                                                    var type = 'bar';
+                                                    var bgColorArray = [
+                                                                'rgba(255, 99, 132, 0.2)',
+                                                                'rgba(54, 162, 235, 0.2)',
+                                                                'rgba(255, 206, 86, 0.2)',
+                                                                'rgba(75, 192, 192, 0.2)'
+                                                                ];
+
+                                                    var borderColorArray = [
+                                                                    'rgba(255, 99, 132, 1)',
+                                                                    'rgba(54, 162, 235, 1)',
+                                                                    'rgba(255, 206, 86, 1)',
+                                                                    'rgba(75, 192, 192, 1)'
+                                                            ];
+                                                    var result = dataResultSet.map(function(data, idx){
+                                                        console.log("Data::"+data["secs"]+"::"+data["filename"]+"::"+idx)
+                                                        bgColorSet = bgColorArray[vdx]
+                                                        borderColorSet = borderColorArray[vdx]
+                                                        labels.push(data["filename"])
+                                                        //do we need to collect together or individual datasets would work??
+                                                        return createDataSet(version, type, data["secs"], bgColorSet, borderColorSet, borderWidth )
+                                                    })
+                                                    console.log("Result.ver::"+result.version+"::R.ty"+result.type+":R.data:"+result.data+":plat:"+platform+":ver:"+version)
+                                                    return result
+                                                })
+                                        })
+                                        console.log("PlatRes::"+platRes)
+                                        // var platformData = {"options":options, "labels":labels, "datasets":platRes, "platform":platform}
+                                        // return platformData
+                                })
+                                
+                        })
+                        console.log("::Next Distinct platform::"+platformDataSets)
+                    })
+                })
+                return "Returning from asyncPromissedCreatePlatformDataSets"
+            }
             function asyncCreatePlatformDataSets() {
     
                 var dbHost = "mongodb://mongo:27017/perfSample";
@@ -24,7 +96,8 @@ var createAllGraphs = function(callback){
                 //Connecting to the Mongodb instance.
                 //Make sure your mongodb daemon mongod is running on port 27017 on localhost
                 MongoClient.connect(dbHost).then(function(db){
-                    db.collection("perfR").distinct(platformq).then(function(platResultSet){
+                    var collection = db.collection("perfR")
+                    collection.distinct(platformq).then(function(platResultSet){
                         var maxPlatCnt = platResultSet.length
                             if (maxPlatCnt == 0){
                                 console.log("Bad PlatfQ Query")
@@ -36,7 +109,7 @@ var createAllGraphs = function(callback){
                                     var platform = platResultSet[index]
                                     var options = createOptions(platform);
                                     var versionq = {"platform": platform }
-                                    db.collection("perfR").distinct("version",versionq).then(function(verResultSet){
+                                    collection.distinct("version",versionq).then(function(verResultSet){
                                             var maxVerCnt = verResultSet.length
                                             if (maxVerCnt == 0){
                                                 db.close()
@@ -51,8 +124,8 @@ var createAllGraphs = function(callback){
                                                     var dataq = {platform:platform ,version:version}
                                                     var varsReq = {filename:1,secs:1,_id:0}
 
-                                                    //db.collection("perfR").find(dataq,varsReq).toArray().then(function(docs){
-                                                    db.collection("perfR").find(dataq,varsReq).toArray().then(function(dataResultSet){
+                                                    //collection.find(dataq,varsReq).toArray().then(function(docs){
+                                                    collection.find(dataq,varsReq).toArray().then(function(dataResultSet){
                                                             if (dataResultSet.length == 0){
                                                                 console.log("Bad dataq Query")
                                                                 callback(true)
@@ -136,8 +209,9 @@ var createAllGraphs = function(callback){
                 //Make sure your mongodb daemon mongod is running on port 27017 on localhost
                 MongoClient.connect(dbHost, function(err, db){
                     if ( err ) throw err;
+                    var collection = db.collection("perfR")
                     //use the find() API and pass an empty query object to retrieve all records
-                    db.collection("perfR").distinct(platformq,function(err, platResultSet){
+                    collection.distinct(platformq,function(err, platResultSet){
                         if ( err ) throw err;
                         var maxPlatCnt = platResultSet.length
                         if (maxPlatCnt == 0){
@@ -158,7 +232,7 @@ var createAllGraphs = function(callback){
                                 console.log("Versionq::"+versionq+"::Stringify::"+JSON.stringify(versionq))
                                 // var dataSets = [];
                                 //var versions = ["1.3.0", "1.3.2"]; // (select disctinct(version) from cpu where platform = plat)
-                                db.collection("perfR").distinct("version",versionq,function(err, verResultSet){
+                                collection.distinct("version",versionq,function(err, verResultSet){
                                     if ( err ) throw err;
                                     var maxVerCnt = verResultSet.length
                                     if (maxVerCnt == 0){
@@ -180,7 +254,7 @@ var createAllGraphs = function(callback){
                                                 var dataq = {platform:platform ,version:version}
                                                 var varsReq = {"filename":1,"secs":1,"_id":0}
 
-                                                db.collection("perfR").find(dataq,varsReq).toArray(function(err, dataResultSet){
+                                                collection.find(dataq,varsReq).toArray(function(err, dataResultSet){
                                                     if ( err ) throw err;
                                                     if (dataResultSet.length == 0){
                                                         console.log("Bad dataq Query")
@@ -319,13 +393,7 @@ var createAllGraphs = function(callback){
                 for (i=0; i < resultSet.length; i++)
                     labels.push(resultSet["secs"]) // Is this label accessible
                 
-                dataSets.push(createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth )); // Is Dataset accessible
-                versionDataProcessed++
-                if (maxVerCnt == versionDataProcessed){
-                    db.close()
-                    var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform}
-                    platformDataSets.push(platformData)
-                }
+                createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth ); // Is Dataset accessible
             }
 
 
@@ -376,7 +444,7 @@ var createAllGraphs = function(callback){
                 MongoClient.connect(dbHost, function(err, db){
                     if ( err ) throw err;
                     //use the find() API and pass an empty query object to retrieve all records
-                    db.collection("perfR").find(query).toArray(function(err, docs){
+                    collection.find(query).toArray(function(err, docs){
                         if ( err ) throw err;
                         callback(docs)
                     });
@@ -394,7 +462,7 @@ var createAllGraphs = function(callback){
                 MongoClient.connect(dbHost, function(err, db){
                     if ( err ) throw err;
                     //use the find() API and pass an empty query object to retrieve all records
-                    db.collection("perfR").distinct(query,function(err, docs){
+                    collection.distinct(query,function(err, docs){
                         if ( err ) throw err;
                         callback(docs)
                     });
