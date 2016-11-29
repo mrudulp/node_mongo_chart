@@ -1,0 +1,80 @@
+[
+    {
+        "filename":"f1","secs":72.4060092977,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":110.0854057722,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f3","secs":216.576968515,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f4","secs":97.6216726434,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":70.0744953192,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":113.5542439586,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f3","secs":173.288788005,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f4","secs":121.402897964,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f5","secs":11.32753365552,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f6","secs":10.75823874291,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f7","secs":10.75828268696,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f8","secs":10.37935161065,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f5","secs":18.7062575465,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f6","secs":19.9115787247,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f7","secs":18.1531571581,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f8","secs":20.3712392611,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f9","secs":1060.57002714,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f10","secs":536.137432973,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f11","secs":57.2826386767,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f12","secs":65.289177909,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f13","secs":49.5390034103,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f9","secs":799.80283123,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f10","secs":567.700169492,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f11","secs":92.5370937273,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f12","secs":95.5722388375,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    },
+    {
+        "filename":"f13","secs":80.2074121027,"platform":"mac","version":"1.3.13", "inputfile":"test1"
+    }
+]
