@@ -122,7 +122,7 @@ var createAllGraphs = function(callback){
                         var varsReq = {filename:1,secs:1,_id:0}
 
                         //collection.find(dataq,varsReq).toArray().then(function(docs){
-                        resolve(collection.find(dataq,varsReq).toArray())
+                        resolve(collection.find(dataq,varsReq).sort({filename:1}).toArray())
                     })
                 });
                 return promise
@@ -160,8 +160,15 @@ var createAllGraphs = function(callback){
                 for (i=0; i < dataResultSet.length; i++)
                     data.push(dataResultSet[i]["secs"])
 
-                for (i=0; i < dataResultSet.length; i++)
-                    labels.push(dataResultSet[i]["filename"]) // Is this label accessible
+                for (i=0; i < dataResultSet.length; i++){
+                    var filename = dataResultSet[i]["filename"]
+                    if (labels.indexOf(filename) === -1){
+                        labels.push(filename) // Is this label accessible
+                    } else {
+                        console.log("Ignoring element::"+filename)
+                    }
+                }
+                    
 
                 return createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth ); // Is Dataset accessible
             }
