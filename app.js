@@ -1,8 +1,9 @@
 'use strict';
 
 // Import Jsons to MongoDB
-// mongoimport -d perfSample -c perfR --type json --file sample_win.json --jsonArray ; mongoimport -d perfSample -c perfR --type json --file sample_mac.json --jsonArray
+// mongoimport -d perfSample -c perfR --type json --file eg_win.json --jsonArray ; mongoimport -d perfSample -c perfR --type json --file eg_mac.json --jsonArray
 // docker cp sample_mac.json nodemongochart_mongo_1:/home ; docker cp sample_win.json nodemongochart_mongo_1:/home ; docker exec -it nodemongochart_mongo_1 /bin/bash
+//docker cp eg_mac.json nodemongochart_mongo_1:/home ; docker cp eg_win.json nodemongochart_mongo_1:/home ; docker exec -it nodemongochart_mongo_1 /bin/bash
 //MongoDB connection URL - mongodb://host:port/dbName
 // Why mongo --https://docs.docker.com/compose/networking/ (Section for db)
 
