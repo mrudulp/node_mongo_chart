@@ -1,7 +1,9 @@
 version: "2"
 services:
     web:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile_node
         volumes: # Use this to mount app from local disk
             - ./:/usr/src/app
         ports:
@@ -9,13 +11,23 @@ services:
             - "5858:5858"
         entrypoint: node --debug=5858 app.js
         links:
-            - mongo
-    mongo:
+            - mongodb
+    mongodb:
         image: mongo
         ports:
             - "27017:27017"
-        # volumes_from: 
-        #     mongodata
+ # http://stackoverflow.com/questions/31210973/how-do-i-seed-a-mongo-database-using-docker-compose
+ # Dummy container to seed mongo for creating dummyDb. seeds for every docker-compose
+ # Might need volumes as shown below  to fix this hackish approach of seeding http://stackoverflow.com/questions/36407477/how-to-run-a-command-once-in-docker-compose
+    mongo-seed:
+        build:
+            context: .
+            dockerfile: Dockerfile_mongo
+        # build: ./mongo-seed
+        links:
+            - mongodb  
+        # volumes:
+        #     - mongodata:/data/db
     # mongodata:
     #     image: tianon/true
     #     volumes:

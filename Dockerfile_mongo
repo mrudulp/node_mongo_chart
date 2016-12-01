@@ -1,0 +1,9 @@
+FROM mongo
+
+# Create app directory
+RUN mkdir -p /usr/src/
+WORKDIR /usr/src/
+
+COPY dummy.json /usr/src/
+CMD mongoimport --host mongodb -d dummyDb -c dcoll --type json --file dummy.json --jsonArray
+# sCMD mongoimport --host=127.0.0.1 -d dummyDb -c dcoll --type json --file dummy.json --jsonArray;
