@@ -19,13 +19,13 @@ services:
  # http://stackoverflow.com/questions/31210973/how-do-i-seed-a-mongo-database-using-docker-compose
  # Dummy container to seed mongo for creating dummyDb. seeds for every docker-compose
  # Might need volumes as shown below  to fix this hackish approach of seeding http://stackoverflow.com/questions/36407477/how-to-run-a-command-once-in-docker-compose
-    mongo-seed:
-        build:
-            context: .
-            dockerfile: Dockerfile_mongo
-        # build: ./mongo-seed
-        links:
-            - mongodb  
+    # mongo-seed:
+    #     build:
+    #         context: .
+    #         dockerfile: Dockerfile_mongo
+    #     # build: ./mongo-seed
+    #     links:
+    #         - mongodb  
         # volumes:
         #     - mongodata:/data/db
     # mongodata:
