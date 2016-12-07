@@ -31,7 +31,6 @@ var createAllGraphs = function(callback){
                                     //call custom method here
                                     console.log("Data Loaded::Count"+resultSet.length)
                                     // return resultSet
-
                                     dataSets.push(getDataSet(resultSet, labels, version, vdx))
                                     versionDataProcessed++
 
@@ -117,7 +116,7 @@ var createAllGraphs = function(callback){
                 var data = []
                 // var version = versions[v]; //Is this accessible??
                 var borderWidth = 1;
-                var type = 'bar';
+                var type = 'horizontalBar';
                 var bgColorArray = [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
@@ -167,10 +166,10 @@ var createAllGraphs = function(callback){
                         display: true,
                     },
                     scales: {
-                        yAxes: [{
+                        xAxes: [{
+                            position: 'bottom',
                             ticks: {
-                                beginAtZero:true,
-                                stepSize:50
+                                beginAtZero:true
                             }
                         }]
                     },
