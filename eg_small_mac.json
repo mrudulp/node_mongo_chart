@@ -1,0 +1,50 @@
+[
+    {
+        "filename":"f1","secs":72.4060092977,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":100.4060092977,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":60.4060092977,"platform":"win","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":80.4060092977,"platform":"win","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":72.4060092977,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":100.4060092977,"platform":"mac","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":60.4060092977,"platform":"win","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":80.4060092977,"platform":"win","version":"1.3.0", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":72.4060092977,"platform":"mac","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":100.4060092977,"platform":"mac","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":60.4060092977,"platform":"win","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f1","secs":80.4060092977,"platform":"win","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":72.4060092977,"platform":"mac","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":100.4060092977,"platform":"mac","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":60.4060092977,"platform":"win","version":"1.3.2", "inputfile":"test1"
+    },
+    {
+        "filename":"f2","secs":80.4060092977,"platform":"win","version":"1.3.2", "inputfile":"test1"
+    }
+]
