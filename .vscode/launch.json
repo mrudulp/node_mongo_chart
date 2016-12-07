@@ -11,8 +11,8 @@
             "program": "${workspaceRoot}/index.js",
             "cwd": "${workspaceRoot}"
         },
-        {
-            "name": "Attach",
+        { // Nodejs Attach on 5858 
+            "name": "Nodejs Attach",
             "type": "node",
             "request": "attach",
             "port": 5858,
@@ -22,6 +22,22 @@
             "outDir": null,
             "localRoot": "${workspaceRoot}",
             "remoteRoot": "/usr/src/app"
-        }
+        },
+        {
+        "name": "Python Launch",
+        "type": "python",
+        "pythonPath":"${config.python.pythonPath}", 
+        "request": "launch",
+        "stopOnEntry": true,
+        "console": "none",
+        "program": "${file}",
+        "cwd": "${workspaceRoot}",
+        "debugOptions": [
+            "WaitOnAbnormalExit",
+            "WaitOnNormalExit",
+            "RedirectOutput"
+        ],
+        "env": {"name":"value"}
+    }
     ]
 }

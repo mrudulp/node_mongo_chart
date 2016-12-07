@@ -56,7 +56,7 @@ var createAllGraphs = function(callback){
             function loadPlatforms(){
                 var promise = new Promise(function(resolve, reject){
 
-                    var dbHost = "mongodb://mongo:27017/perfSample";
+                    var dbHost = "mongodb://mongodb:27017/perfSample";
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
@@ -74,7 +74,7 @@ var createAllGraphs = function(callback){
 
             function loadVersions(platform){
                 var promise = new Promise(function(resolve, reject){
-                    var dbHost = "mongodb://mongo:27017/perfSample";
+                    var dbHost = "mongodb://mongodb:27017/perfSample";
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
@@ -92,7 +92,7 @@ var createAllGraphs = function(callback){
 
             function loadData(platform, version){
                 var promise = new Promise(function(resolve, reject){
-                    var dbHost = "mongodb://mongo:27017/perfSample";
+                    var dbHost = "mongodb://mongodb:27017/perfSample";
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
@@ -148,6 +148,7 @@ var createAllGraphs = function(callback){
                     if (labels.indexOf(filename) === -1){
                         labels.push(filename) // Is this label accessible
                     } else {
+                        labels.push("") //Hack to avoid same filename data hiding due to missing label
                         console.log("Ignoring element::"+filename)
                     }
                 }
