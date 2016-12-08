@@ -1,11 +1,11 @@
-var createAllGraphs = function(callback){
+var createAllGraphs = function(user, callback){
 
-            asyncPromissedCreatePlatformDataSets()
+            asyncPromissedCreatePlatformDataSets(user)
 
-            function asyncPromissedCreatePlatformDataSets(){
+            function asyncPromissedCreatePlatformDataSets(user){
                 var platformDataSets = []
 
-                loadPlatforms().then(function(platforms){
+                loadPlatforms(user).then(function(platforms){
                     var maxPlatCnt = platforms.length
                     if (maxPlatCnt == 0){
                         console.log("Bad PlatfQ Query")
@@ -15,7 +15,7 @@ var createAllGraphs = function(callback){
                     platforms.map(function(platform){
                         //platformDataSet per platform
                         var options = createOptions(platform);
-                        loadVersions(platform).then(function(versions){
+                        loadVersions(user, platform).then(function(versions){
                             var maxVerCnt = versions.length
                             if (maxVerCnt == 0){
                                 db.close()
@@ -27,7 +27,7 @@ var createAllGraphs = function(callback){
                             var labels = [] // For all versions for given platform
                             versions.map(function(version, vdx){
                                 // Dataset Per Version
-                                loadData(platform, version).then(function(resultSet){
+                                loadData(user, platform, version).then(function(resultSet){
                                     //call custom method here
                                     console.log("Data Loaded::Count"+resultSet.length)
                                     // return resultSet
@@ -52,10 +52,11 @@ var createAllGraphs = function(callback){
             }// asyncPromissedCreatePlatformDataSets
 
 
-            function loadPlatforms(){
+            function loadPlatforms(user){
                 var promise = new Promise(function(resolve, reject){
 
-                    var dbHost = "mongodb://mongodb:27017/perfSample";
+                    //var dbHost = "mongodb://mongodb:27017/perfSample";
+                    var dbHost = "mongodb://mongodb:27017/" + user;
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
@@ -71,9 +72,9 @@ var createAllGraphs = function(callback){
                 return promise
             }
 
-            function loadVersions(platform){
+            function loadVersions(user, platform){
                 var promise = new Promise(function(resolve, reject){
-                    var dbHost = "mongodb://mongodb:27017/perfSample";
+                    var dbHost = "mongodb://mongodb:27017/" + user;
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
@@ -89,9 +90,10 @@ var createAllGraphs = function(callback){
                 return promise
             }
 
-            function loadData(platform, version){
+            function loadData(user, platform, version){
                 var promise = new Promise(function(resolve, reject){
-                    var dbHost = "mongodb://mongodb:27017/perfSample";
+                    // protocol(mongodb)://container(mongodb):port(27017)/db(perfSample)
+                    var dbHost = "mongodb://mongodb:27017/" + user;
                     var mongodb = require('mongodb')
                     var MongoClient = mongodb.MongoClient;
 
