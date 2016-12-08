@@ -25,14 +25,16 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
 
-app.get("/perfs", function(req, res){
+app.get("/perfs/:user", function(req, res){
 //    res.sendFile(path.join(__dirname+'/index.html'));
-  getData(res);  
+  var user = req.params['user'];
+  console.log("User::"+user)
+  getData(user, res);  
 });
 
 
-function getData(res){
-  chart.createAllGraphs(function(err,callbackObj){
+function getData(user, res){
+  chart.createAllGraphs(user,function(err, callbackObj){
     res.send(callbackObj)
   });
  }
