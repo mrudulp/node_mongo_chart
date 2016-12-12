@@ -22,7 +22,10 @@ function fetchData(url){
                 console.log(platformDataSets)
 
                 for (p=0; p < platformDataSets.length; p++){
-                    createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets);
+                    if (platformDataSets.length == 1)
+                        createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets,true);
+                    else
+                        createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets, false);
                 }
         },
         error: function(data){
@@ -31,10 +34,15 @@ function fetchData(url){
     });  
 }
 
-function createGraph(id, aLabels, aOptions, aDataSets){
+function createGraph(id, aLabels, aOptions, aDataSets, shouldShowFull){
         console.log(id);
         var plot = document.getElementById("plots")
-        $(".plots").append("<div style='width:49%; height:50%;float:left'><canvas id="+id+" width='100' height='100' style='border:1px solid;'></canvas></div>");
+        if (shouldShowFull){
+            $(".plots").append("<div><canvas id="+id+" width='100' height='100' style='border:1px solid;'></canvas></div>");
+        }
+        else{
+            $(".plots").append("<div style='width:49%; height:50%;float:left'><canvas id="+id+" width='100' height='100' style='border:1px solid;'></canvas></div>");
+        }
         // <div id=" + this.id + "></div>");
         var ctx = document.getElementById(id);
         var myChart = new Chart(ctx, {
