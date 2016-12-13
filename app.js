@@ -25,16 +25,35 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
 
-app.get("/perfs/:user", function(req, res){
+app.get("/perfs/:options", function(req, res){
 //    res.sendFile(path.join(__dirname+'/index.html'));
-  var user = req.params['user'];
-  console.log("User::"+user)
-  getData(user, res);  
+  var options = req.params['options'];
+  var optionArr = options.split(",")
+  
+  var optionObj = optionArr.reduce(function(map,option){
+    var optMap = option.split("=")
+    map[optMap[0]] = optMap[1]
+    return map
+  },{});
+  console.log("User::" + options.user)
+  console.log("Avg::" + options.avg)
+  console.log("StepSize::" + options.stepSize)
+  console.log("MaxValue::" + options.maxValue)
+  //var optionObj = {"user": user}
+  getData(optionObj, res); 
 });
 
+// app.get("/perfs/:user/:avg", function(req, res){
+// //    res.sendFile(path.join(__dirname+'/index.html'));
+//   var user = req.params['user'];
+//   var avg = req.params['avg']
+//   console.log("User::"+user+"::Avg::"+avg)
+//   var optionObj = {"user": user, "avg": avg}
+//   getData(optionObj, res);
+// });
 
-function getData(user, res){
-  chart.createAllGraphs(user,function(err, callbackObj){
+function getData(optionObj, res){
+  chart.createAllGraphs(optionObj,function(err, callbackObj){
     res.send(callbackObj)
   });
  }

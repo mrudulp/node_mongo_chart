@@ -7,13 +7,24 @@ $( "#userForm" ).submit(function( event ) {
     event.preventDefault();
 
     user = $("input[name='user']").val()
-    url = "http://localhost:8080/perfs/"+user
+    var ckbox = $('#avgChkBox');
+    avg = ckbox.is(':checked')
+    stepSize = $("input[name='stepSize']").val()
+    maxValue = $("input[name='maxValue']").val()
+    optionObj = {"user":user, "avg":avg, "stepSize":stepSize, "maxValue":maxValue}
+    var options = []
+    for (var i in optionObj){
+        options.push(encodeURI(i) + "=" + encodeURI(optionObj[i]));
+    }
+    var href = window.location.href
+    url = href + "perfs/" + options
     fetchData(url)
     });
     
 
 function fetchData(url){
     console.log("sending ajax request to /perfs");
+    $(".plots").empty()
     $.ajax({
         url: url,
         type: 'GET',
