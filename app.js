@@ -35,10 +35,11 @@ app.get("/perfs/:options", function(req, res){
     map[optMap[0]] = optMap[1]
     return map
   },{});
-  console.log("User::" + options.user)
-  console.log("Avg::" + options.avg)
-  console.log("StepSize::" + options.stepSize)
-  console.log("MaxValue::" + options.maxValue)
+  console.log("User::" + optionObj.user)
+  console.log("Avg::" + optionObj.avg)
+  console.log("St::" + optionObj.st)
+  console.log("StepSize::" + optionObj.stepSize)
+  console.log("MaxValue::" + optionObj.maxValue)
   //var optionObj = {"user": user}
   getData(optionObj, res); 
 });
