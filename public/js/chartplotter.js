@@ -11,6 +11,8 @@ $( "#userForm" ).submit(function( event ) {
     avg = ckbox.is(':checked')
     var stbox = $('#stackedChkBox');
     st = stbox.is(':checked')
+    var stbox = $('#stackedChkBox');
+    st = stbox.is(':checked')
     stepSize = $("input[name='stepSize']").val()
     maxValue = $("input[name='maxValue']").val()
     optionObj = {"user":user, "avg":avg, "st":st, "stepSize":stepSize, "maxValue":maxValue}
@@ -36,7 +38,7 @@ function fetchData(url){
                 console.log(platformDataSets)
 
                 for (p=0; p < platformDataSets.length; p++){
-                    if (platformDataSets.length == 1){
+                    if (platformDataSets.length == 1)
                         createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets,true);
                         createDescriptionTable(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].labelDescriptions, true)
                     }
