@@ -11,8 +11,6 @@ $( "#userForm" ).submit(function( event ) {
     avg = ckbox.is(':checked')
     var stbox = $('#stackedChkBox');
     st = stbox.is(':checked')
-    var stbox = $('#stackedChkBox');
-    st = stbox.is(':checked')
     stepSize = $("input[name='stepSize']").val()
     maxValue = $("input[name='maxValue']").val()
     optionObj = {"user":user, "avg":avg, "st":st, "stepSize":stepSize, "maxValue":maxValue}
@@ -38,7 +36,7 @@ function fetchData(url){
                 console.log(platformDataSets)
 
                 for (p=0; p < platformDataSets.length; p++){
-                    if (platformDataSets.length == 1)
+                    if (platformDataSets.length == 1){
                         createGraph(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].options, platformDataSets[p].datasets,true);
                         createDescriptionTable(platformDataSets[p].platform, platformDataSets[p].labels, platformDataSets[p].labelDescriptions, true)
                     }
@@ -63,9 +61,9 @@ function createGraph(id, aLabels, aOptions, aDataSets, shouldShowFull){
         }
         else{
             if (id === "mac")
-                $(".plots").append("<div style='width:49%; height:50%;float:right'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#1E1E1E'></canvas></div>");
+                $(".plots").append("<div style='width:49%; height:50%;float:right'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#E5FFDD'></canvas></div>");
             else
-                $(".plots").append("<div style='width:49%; height:50%;float:left'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#1E1E1E'></canvas></div>");
+                $(".plots").append("<div style='width:49%; height:50%;float:left'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#E5FFDD'></canvas></div>");
         }
         // <div id=" + this.id + "></div>");
         var ctx = document.getElementById(id);

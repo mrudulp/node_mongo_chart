@@ -125,19 +125,53 @@ var createAllGraphs = function(optionObj, callback){
                 // var version = versions[v]; //Is this accessible??
                 var borderWidth = 1;
                 var type = 'horizontalBar';
-                var bgColorArray = [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                            'rgba(75, 192, 192, 0.5)'
-                            ];
+                 var bgColorArray = [
+                     //'rgba(240, 219, 24, 0.5)',
+                     'rgba(251, 255, 18, 0.5)',
+                     'rgba(217, 52, 251, 0.5)',
+                     'rgba(75, 2, 146, 0.5)',
+                     'rgba(127, 33, 2, 0.5)',
+                     'rgba(226, 112, 31, 0.5)',
+                     'rgba(138, 248, 13, 0.5)',
+                     'rgba(87, 143, 137, 0.5)',
+                     'rgba(65, 82, 146, 0.5)',
+                     'rgba(142, 138, 9, 0.5)',
+                     'rgba(128, 31, 81, 0.5)',
+                     'rgba(25, 0, 146, 0.5)',
+                     'rgba(73, 144, 4, 0.5)'
+                     
+                 ];
+                 var borderColorArray = [
+                     //'rgba(240, 219, 24, 1.00)',
+                     'rgba(251, 255, 18, 1.00)',
+                     'rgba(217, 52, 251, 1.00)',
+                     'rgba(75, 2, 146, 1.00)',
+                     'rgba(127, 33, 2, 1.00)',
+                     'rgba(226, 112, 31, 1.00)',
+                     'rgba(138, 248, 13, 1.00)',
+                     'rgba(87, 143, 137, 1.00)',
+                     'rgba(65, 82, 146, 1.00)',
+                     'rgba(142, 138, 9, 1.00)',
+                     'rgba(128, 31, 81, 1.00)',
+                     'rgba(25, 0, 146, 1.00)',
+                     'rgba(73, 144, 4, 1.00)',
+                     
+                 ];
+                // var bgColorArray = [
+                //             'rgba(255, 99, 132, 0.5)',
+                //             'rgba(54, 162, 235, 0.5)',
+                //             'rgba(255, 206, 86, 0.5)',
+                //             'rgba(75, 192, 192, 0.5)'
+                //             ];
 
-                var borderColorArray = [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)'
-                        ];
+                // var borderColorArray = [
+                //                 'rgba(255, 99, 132, 1)',
+                //                 'rgba(54, 162, 235, 1)',
+                //                 'rgba(255, 206, 86, 1)',
+                //                 'rgba(75, 192, 192, 1)'
+                //                 'rgba(240, 219, 24, 1.00)'
+                //         ];
+
 
                 for (i=0; i < dataResultSet.length; i++)
                     bgColorSet.push(bgColorArray[vdx]);//Per plaform color == idx
