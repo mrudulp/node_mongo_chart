@@ -14,47 +14,51 @@ var createAllGraphs = function(optionObj, callback){
                     var platformProcessed = 0
                     platforms.map(function(platform){
                         //platformDataSet per platform
+                        loadFileNames().then(function(labels){
                         var options = createOptions(platform, optionObj);
-                        loadVersions(optionObj, platform).then(function(versions){
-                            var maxVerCnt = versions.length
-                            if (maxVerCnt == 0){
-                                db.close()
-                                console.log("Bad Versionq Query")
-                                callback(true)
-                            }
-                            var versionDataProcessed = 0
-                            var dataSets = [] // Datasets of all versions for given platform
-                            var labels = [] // For all versions for given platform
-                            var labelDescriptions = [] //For all versions for given platform
-                            versions.map(function(version, vdx){
-                                // Dataset Per Version
-                                loadData(optionObj, platform, version).then(function(resultSet){
-                                    //call custom method here
-                                    console.log("Data Loaded::Count"+resultSet.length)
-                                    // return resultSet
-                                    if (optionObj.avg){ //Show avg
-                                        dataSets.push(getAvgDataSet(resultSet, labels, labelDescriptions, version, vdx)) 
-                                    }
-                                    else{ // Show all details
-                                        dataSets.push(getDataSet(resultSet, labels, labelDescriptions, version, vdx, false))
-                                    }
-                                    versionDataProcessed++
+                            loadVersions(optionObj, platform).then(function(versions){
+                                var maxVerCnt = versions.length
+                                if (maxVerCnt == 0){
+                                    db.close()
+                                    console.log("Bad Versionq Query")
+                                    callback(true)
+                                }
 
-                                    if (maxVerCnt == versionDataProcessed){
-                                        
-                                        var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform, "labelDescriptions":labelDescriptions}
-                                        platformDataSets.push(platformData)
-                                        platformProcessed++ // Processed one version, add platform count
-
-                                        if (platformProcessed == maxPlatCnt){
-                                            callback(null,platformDataSets)
+                                var versionDataProcessed = 0
+                                var dataSets = [] // Datasets of all versions for given platform
+                                // var labels = [] // For all versions for given platform
+                                var labelDescriptions = [] //For all versions for given platform
+                                versions.map(function(version, vdx){
+                                    // Dataset Per Version
+                                    loadData(optionObj, platform, version).then(function(resultSet){
+                                        //call custom method here
+                                        console.log("Data Loaded::Count"+resultSet.length)
+                                        // return resultSet
+                                        if (optionObj.avg){ //Show avg
+                                            dataSets.push(getAvgDataSet(resultSet, labels, labelDescriptions, version, vdx)) 
                                         }
-                                    }
-                                })
-                            })
-                        })
-                    })
-                })
+                                        else{ // Show all details
+                                            dataSets.push(getDataSet(resultSet, labels, labelDescriptions, version, vdx, false))
+                                        }
+                                        versionDataProcessed++
+
+                                        if (maxVerCnt == versionDataProcessed){
+                                            
+                                            var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform, "labelDescriptions":labelDescriptions}
+                                            platformDataSets.push(platformData)
+                                            platformProcessed++ // Processed one version, add platform count
+
+                                            if (platformProcessed == maxPlatCnt){
+                                                callback(null,platformDataSets)
+                                            }
+                                        }
+                                    }) //loadData
+                                })// version map
+
+                            })//loadVersions
+                        })//loadFileNames
+                    }) // platform map
+                }) //loadPlatforms
             }// asyncPromissedCreatePlatformDataSets
 
 
@@ -96,6 +100,23 @@ var createAllGraphs = function(optionObj, callback){
                 return promise
             }
 
+            function loadFileNames(){
+                var promise = new Promise(function(resolve, reject){
+                    var dbHost = "mongodb://mongodb:27017/" + optionObj.user;
+                    var mongodb = require('mongodb')
+                    var MongoClient = mongodb.MongoClient;
+
+                    //Connecting to the Mongodb instance.
+                    //Make sure your mongodb daemon mongod is running on port 27017 on localhost
+                    MongoClient.connect(dbHost).then(function(db){
+                        var collection = db.collection("perfR")
+                        console.log("Distinct Filename going")
+                        resolve(collection.distinct("filename"))   
+                    })
+                });
+                return promise
+            }
+
             function loadData(optionObj, platform, version){
                 var promise = new Promise(function(resolve, reject){
                     // protocol(mongodb)://container(mongodb):port(27017)/db(perfSample)
@@ -121,12 +142,11 @@ var createAllGraphs = function(optionObj, callback){
             function getDataSet(dataResultSet, labels, labelDescriptions, version, vdx, skipTime){
                 var bgColorSet = []
                 var borderColorSet = []
-                var data = []
+                // var data = []
                 // var version = versions[v]; //Is this accessible??
                 var borderWidth = 1;
                 var type = 'horizontalBar';
                  var bgColorArray = [
-                     //'rgba(240, 219, 24, 0.5)',
                      'rgba(251, 255, 18, 0.5)',
                      'rgba(217, 52, 251, 0.5)',
                      'rgba(75, 2, 146, 0.5)',
@@ -139,10 +159,9 @@ var createAllGraphs = function(optionObj, callback){
                      'rgba(128, 31, 81, 0.5)',
                      'rgba(25, 0, 146, 0.5)',
                      'rgba(73, 144, 4, 0.5)'
-                     
                  ];
+
                  var borderColorArray = [
-                     //'rgba(240, 219, 24, 1.00)',
                      'rgba(251, 255, 18, 1.00)',
                      'rgba(217, 52, 251, 1.00)',
                      'rgba(75, 2, 146, 1.00)',
@@ -154,24 +173,8 @@ var createAllGraphs = function(optionObj, callback){
                      'rgba(142, 138, 9, 1.00)',
                      'rgba(128, 31, 81, 1.00)',
                      'rgba(25, 0, 146, 1.00)',
-                     'rgba(73, 144, 4, 1.00)',
-                     
+                     'rgba(73, 144, 4, 1.00)'
                  ];
-                // var bgColorArray = [
-                //             'rgba(255, 99, 132, 0.5)',
-                //             'rgba(54, 162, 235, 0.5)',
-                //             'rgba(255, 206, 86, 0.5)',
-                //             'rgba(75, 192, 192, 0.5)'
-                //             ];
-
-                // var borderColorArray = [
-                //                 'rgba(255, 99, 132, 1)',
-                //                 'rgba(54, 162, 235, 1)',
-                //                 'rgba(255, 206, 86, 1)',
-                //                 'rgba(75, 192, 192, 1)'
-                //                 'rgba(240, 219, 24, 1.00)'
-                //         ];
-
 
                 for (i=0; i < dataResultSet.length; i++)
                     bgColorSet.push(bgColorArray[vdx]);//Per plaform color == idx
@@ -180,8 +183,12 @@ var createAllGraphs = function(optionObj, callback){
                 for (i=0; i < dataResultSet.length; i++)
                     borderColorSet.push(borderColorArray[vdx]);//Per plaform color == idx
 
-                for (i=0; i < dataResultSet.length; i++)
-                    data.push(dataResultSet[i]["secs"])
+                var data = initialiseData(labels.length)
+
+                for (i=0; i < dataResultSet.length; i++){
+                    var idx = labels.indexOf(dataResultSet[i]["filename"]);
+                    data[idx] = dataResultSet[i]["secs"];
+                }
 
                 for (i=0; i < dataResultSet.length; i++){
                     var filename = dataResultSet[i]["filename"]
@@ -208,8 +215,7 @@ var createAllGraphs = function(optionObj, callback){
                         labelDescriptions.push(description)//multiple time as we push labels multiple times
                     }
 
-                }
-                    
+                }    
 
                 return createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth ); // Is Dataset accessible
             }
@@ -234,6 +240,21 @@ var createAllGraphs = function(optionObj, callback){
                     filteredResultSet.push({"filename":currFile,"secs":avgSecs,"description":description,"timestamp":timestamp})
                 } while(i < dataResultSet.length)
                 return getDataSet(filteredResultSet, labels, labelDescriptions, version, vdx, true)
+            }
+
+            function createDataSet(labelText, type, aData, aBgColorSet, aBorderColorSet, aBorderWidth ){
+                var data = {
+                            label: labelText,
+                            type: type,
+                            // data extract
+                            data: aData,
+                            // bgColor & border color repeat for 1 version 
+                            backgroundColor: aBgColorSet,
+                            borderColor: aBorderColorSet,
+                            borderWidth: aBorderWidth
+                        }
+                        //N times of version
+                return data
             }
 
             function createOptions(chartTitle, optionObj){
@@ -277,23 +298,12 @@ var createAllGraphs = function(optionObj, callback){
                 return options
             }
 
-            function createDataSet(labelText, type, aData, aBgColorSet, aBorderColorSet, aBorderWidth ){
-                var data = {
-                            label: labelText,
-                            type: type,
-                            // data extract
-                            data: aData,
-                            // bgColor & border color repeat for 1 version 
-                            backgroundColor: aBgColorSet,
-                            borderColor: aBorderColorSet,
-                            borderWidth: aBorderWidth
-                        }
-                        //N times of version
-                return data
-            }
-
             function getBoolean(valueString){
                 return new Boolean(valueString.toLowerCase() == 'true');
+            }
+
+            function initialiseData(length){
+                return Array.apply(null, Array(5)).map(Number.prototype.valueOf,0)
             }
             
         }
