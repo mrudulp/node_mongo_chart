@@ -26,7 +26,7 @@ app.get('/', function (req, res) {
 });
 
 app.get("/perfs/:options", function(req, res){
-//    res.sendFile(path.join(__dirname+'/index.html'));
+
   var options = req.params['options'];
   var optionArr = options.split(",")
   
@@ -35,23 +35,15 @@ app.get("/perfs/:options", function(req, res){
     map[optMap[0]] = optMap[1]
     return map
   },{});
+
   console.log("User::" + optionObj.user)
-  console.log("Avg::" + optionObj.avg)
   console.log("St::" + optionObj.st)
   console.log("StepSize::" + optionObj.stepSize)
   console.log("MaxValue::" + optionObj.maxValue)
-  //var optionObj = {"user": user}
+
   getData(optionObj, res); 
 });
 
-// app.get("/perfs/:user/:avg", function(req, res){
-// //    res.sendFile(path.join(__dirname+'/index.html'));
-//   var user = req.params['user'];
-//   var avg = req.params['avg']
-//   console.log("User::"+user+"::Avg::"+avg)
-//   var optionObj = {"user": user, "avg": avg}
-//   getData(optionObj, res);
-// });
 
 function getData(optionObj, res){
   chart.createAllGraphs(optionObj,function(err, callbackObj){

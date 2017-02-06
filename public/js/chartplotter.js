@@ -7,13 +7,11 @@ $( "#userForm" ).submit(function( event ) {
     event.preventDefault();
 
     user = $("input[name='user']").val().toLowerCase()
-    var ckbox = $('#avgChkBox');
-    avg = ckbox.is(':checked')
     var stbox = $('#stackedChkBox');
     st = stbox.is(':checked')
     stepSize = $("input[name='stepSize']").val()
     maxValue = $("input[name='maxValue']").val()
-    optionObj = {"user":user, "avg":avg, "st":st, "stepSize":stepSize, "maxValue":maxValue}
+    optionObj = {"user":user, "st":st, "stepSize":stepSize, "maxValue":maxValue}
     var options = []
     for (var i in optionObj){
         options.push(encodeURI(i) + "=" + encodeURI(optionObj[i]));
@@ -54,16 +52,18 @@ function fetchData(url){
 }
 
 function createGraph(id, aLabels, aOptions, aDataSets, shouldShowFull){
+        var canvasBkgnd = "#E5FFDD";
         console.log(id);
+        canvasHeight = $("input[name='canvasHeight']").val().toLowerCase()
         var plot = document.getElementById("plots")
         if (shouldShowFull){
-            $(".plots").append("<div><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#1E1E1E'></canvas></div>");
+            $(".plots").append("<div><canvas id=" + id + " width='100' height='" + canvasHeight + "' style='border:1px solid;background:" + canvasBkgnd + "'></canvas></div>");
         }
         else{
             if (id === "mac")
-                $(".plots").append("<div style='width:49%; height:50%;float:right'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#E5FFDD'></canvas></div>");
+                $(".plots").append("<div style='width:49%;float:right'><canvas id=" + id + " width='100' height='" + canvasHeight + "' style='border:1px solid;background:" + canvasBkgnd + "'></canvas></div>");
             else
-                $(".plots").append("<div style='width:49%; height:50%;float:left'><canvas id="+id+" width='100' height='100' style='border:1px solid;background:#E5FFDD'></canvas></div>");
+                $(".plots").append("<div style='width:49%;float:left'><canvas id=" + id + " width='100' height='" + canvasHeight + "' style='border:1px solid;background:" + canvasBkgnd + "'></canvas></div>");
         }
         // <div id=" + this.id + "></div>");
         var ctx = document.getElementById(id);

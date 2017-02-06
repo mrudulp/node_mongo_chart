@@ -28,23 +28,23 @@ var createAllGraphs = function(optionObj, callback){
                                 var dataSets = [] // Datasets of all versions for given platform
                                 // var labels = [] // For all versions for given platform
                                 var labelDescriptions = [] //For all versions for given platform
-                                versions.map(function(version, vdx){
+                                versions.sort().map(function(version, vdx){
                                     // Dataset Per Version
                                     loadData(optionObj, platform, version).then(function(resultSet){
                                         //call custom method here
                                         console.log("Data Loaded::Count"+resultSet.length)
                                         // return resultSet
                                         if (optionObj.avg){ //Show avg
-                                            dataSets.push(getAvgDataSet(resultSet, labels, labelDescriptions, version, vdx)) 
+                                            dataSets.push(getAvgDataSet(resultSet, labels.sort(), labelDescriptions, version, vdx)) 
                                         }
                                         else{ // Show all details
-                                            dataSets.push(getDataSet(resultSet, labels, labelDescriptions, version, vdx, false))
+                                            dataSets.push(getDataSet(resultSet, labels.sort(), labelDescriptions, version, vdx))
                                         }
                                         versionDataProcessed++
 
                                         if (maxVerCnt == versionDataProcessed){
                                             
-                                            var platformData = {"options":options, "labels":labels, "datasets":dataSets, "platform":platform, "labelDescriptions":labelDescriptions}
+                                            var platformData = {"options":options, "labels":labels.sort(), "datasets":dataSets, "platform":platform, "labelDescriptions":labelDescriptions}
                                             platformDataSets.push(platformData)
                                             platformProcessed++ // Processed one version, add platform count
 
@@ -111,7 +111,7 @@ var createAllGraphs = function(optionObj, callback){
                     MongoClient.connect(dbHost).then(function(db){
                         var collection = db.collection("perfR")
                         console.log("Distinct Filename going")
-                        resolve(collection.distinct("filename"))   
+                        resolve(collection.distinct("filename"))
                     })
                 });
                 return promise
@@ -139,12 +139,12 @@ var createAllGraphs = function(optionObj, callback){
                 return promise
             }
 
-            function getDataSet(dataResultSet, labels, labelDescriptions, version, vdx, skipTime){
+            function getDataSet(dataResultSet, labels, labelDescriptions, version, vdx){
                 var bgColorSet = []
                 var borderColorSet = []
                 // var data = []
                 // var version = versions[v]; //Is this accessible??
-                var borderWidth = 1;
+                var borderWidth = 3;
                 var type = 'horizontalBar';
                  var bgColorArray = [
                      'rgba(251, 255, 18, 0.5)',
@@ -197,24 +197,6 @@ var createAllGraphs = function(optionObj, callback){
                         console.log("description not defined")
                         description = "NO DESCRIPTION"
                     }
-                    if (skipTime){ //Avg Times required no time mentions required. Also unique filenames ensured
-                        if (labels.indexOf(filename) === -1){
-                            labels.push(filename) // Is this label accessible
-                            labelDescriptions.push(description) // Insync with Labels
-                        }
-                    }
-                    else{
-                        t = dataResultSet[i]["timestamp"]
-                        if (labels.indexOf(filename) === -1){
-                            name = filename + "(" + t + ")"
-                            labels.push(name) // Is this label accessible
-                        } else {
-                            labels.push(t) //Hack to avoid same filename data hiding due to missing label
-                            console.log("Ignoring element::"+filename)
-                        }
-                        labelDescriptions.push(description)//multiple time as we push labels multiple times
-                    }
-
                 }    
 
                 return createDataSet(version, type, data, bgColorSet, borderColorSet, borderWidth ); // Is Dataset accessible
@@ -239,7 +221,7 @@ var createAllGraphs = function(optionObj, callback){
                     
                     filteredResultSet.push({"filename":currFile,"secs":avgSecs,"description":description,"timestamp":timestamp})
                 } while(i < dataResultSet.length)
-                return getDataSet(filteredResultSet, labels, labelDescriptions, version, vdx, true)
+                return getDataSet(filteredResultSet, labels, labelDescriptions, version, vdx)
             }
 
             function createDataSet(labelText, type, aData, aBgColorSet, aBorderColorSet, aBorderWidth ){
@@ -250,8 +232,8 @@ var createAllGraphs = function(optionObj, callback){
                             data: aData,
                             // bgColor & border color repeat for 1 version 
                             backgroundColor: aBgColorSet,
-                            borderColor: aBorderColorSet,
-                            borderWidth: aBorderWidth
+                            borderColor: aBorderColorSet
+                            //borderWidth: aBorderWidth
                         }
                         //N times of version
                 return data
@@ -265,7 +247,7 @@ var createAllGraphs = function(optionObj, callback){
                 if(st === true){
                     console.log("St is TRUE");
                     yA = {
-                        "barThickness": 12,
+                        // "barThickness": 10000,
                         "stacked": st,
                         "categoryPercentage": 1
                     }
